@@ -21,7 +21,7 @@ class Queue(){
                 s1.pop()
             }
         }
-        var y = s2.peek()
+        val y = s2.peek()
         s2.pop()
         return y;
     }
@@ -34,9 +34,7 @@ class Queue(){
                 s1.pop()
             }
         }
-        var y = s2.peek()
-        s2.pop()
-        return y;
+        return s2.peek();
     }
 
     /** Returns whether the queue is empty. */

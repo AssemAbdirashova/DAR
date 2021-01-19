@@ -21,26 +21,17 @@ class Stack() {
         val q: Queue<Int> = q2
         q2 = q1
         q1 = q
-//        while(!q2.isEmpty()){
-//            q1.add(q2.peek())
-//        }
     }
 
     /** Removes the element on top of the stack and returns that element. */
     fun pop(): Int {
         size--;
-        return if(q2 == null)
-            0
-        else
-            q2.poll()
+        return q2.poll()
     }
 
     /** Get the top element. */
     fun top(): Int {
-        return if(q2 == null)
-            0
-        else
-            q2.peek()
+        return q2.peek()
     }
 
     /** Returns whether the stack is empty. */
