@@ -41,7 +41,8 @@ class StudentListAdapter(private var list: MutableList<Student>, private val ite
             list.remove(list[position])
             notifyItemRemoved(position)
             notifyDataSetChanged()
-            itemClickListener?.onStudentDeleted(restStudent, pos)
+            itemClickListener?.
+            onStudentDeleted(restStudent, pos)
         }
 
     }
@@ -57,7 +58,7 @@ class StudentListAdapter(private var list: MutableList<Student>, private val ite
 
     interface OnItemClickListener {
         fun onStudentSelected(student: Student, position: Int)
-        fun onStudentDeleted(student: Student, position: Int)
+        fun onStudentDeleted(restStudent: Student, position: Int)
     }
 
 

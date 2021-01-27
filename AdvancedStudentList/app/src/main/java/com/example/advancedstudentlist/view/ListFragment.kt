@@ -92,7 +92,7 @@ class ListFragment : Fragment() {
                 students.add(student)
                 studentsAdapter.addStudent(student)
                 etName.setText("")
-                recyclerView.smoothScrollToPosition(students.size - 1);
+                recyclerView.smoothScrollToPosition(students.size - 1)
             }
         }
         btnRestoreStudent.setOnClickListener {
@@ -101,8 +101,9 @@ class ListFragment : Fragment() {
                 restore.remove()
             }
             if(!st.isEmpty()) {
-                recyclerView.smoothScrollToPosition(students.size - 1);
+                recyclerView.smoothScrollToPosition(students.size - 1)
                 studentsAdapter.addStudent(st.peek())
+                students.add(st.peek())
                 st.pop()
             }
             else {
@@ -113,7 +114,7 @@ class ListFragment : Fragment() {
     override fun onPause() {
         super.onPause()
         mBundleRecyclerViewState = Bundle()
-        val listState = recyclerView!!.layoutManager!!.onSaveInstanceState()
+        val listState = recyclerView.layoutManager!!.onSaveInstanceState()
         mBundleRecyclerViewState!!.putParcelable(KEY_RECYCLER_STATE, listState)
     }
 
@@ -121,7 +122,7 @@ class ListFragment : Fragment() {
         super.onResume()
         if (mBundleRecyclerViewState != null) {
             val listState = mBundleRecyclerViewState!!.getParcelable<Parcelable>(KEY_RECYCLER_STATE)
-            recyclerView!!.layoutManager!!.onRestoreInstanceState(listState)
+            recyclerView.layoutManager!!.onRestoreInstanceState(listState)
         }
     }
 
