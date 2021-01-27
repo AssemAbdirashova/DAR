@@ -52,7 +52,6 @@ class ListFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(context)
         navController = Navigation.findNavController(view)
 
-
         listener = object : StudentListAdapter.OnItemClickListener {
             override fun onStudentSelected(student: Student, position: Int) {
                 val action = ListFragmentDirections.listToDetail(student)
@@ -61,16 +60,7 @@ class ListFragment : Fragment() {
                 scrollPosition = position
             }
             override fun onStudentDeleted(restStudent: Student, position: Int) {
-                when {
-                    restore.size < 5 || restore.isEmpty() -> {
-                        restore.add(restStudent)
-                    }
-                    else -> {
-                        restore.remove()
-                        restore.add(restStudent)
-                    }
-                }
-                students.remove(restStudent)
+               saveDeletedItems(restStudent)
             }
         }
         val studentsAdapter = StudentListAdapter(students.toMutableList(), listener)
@@ -95,22 +85,42 @@ class ListFragment : Fragment() {
                 recyclerView.smoothScrollToPosition(students.size - 1)
             }
         }
+
         btnRestoreStudent.setOnClickListener {
-            while (!restore.isEmpty()) {
-                st.push(restore.peek())
-                restore.remove()
-            }
-            if(!st.isEmpty()) {
-                studentsAdapter.addStudent(st.peek())
-                students.add(st.peek())
-                recyclerView.smoothScrollToPosition(students.size - 1)
-                st.pop()
-            }
-            else {
-                Toast.makeText(context, "Trash is empty", Toast.LENGTH_SHORT).show()
-            }
+           getDeletedItems(studentsAdapter)
         }
     }
+
+    fun saveDeletedItems(restStudent: Student){
+        when {
+            restore.size < 5 || restore.isEmpty() -> {
+                restore.add(restStudent)
+            }
+            else -> {
+                restore.remove()
+                restore.add(restStudent)
+            }
+        }
+        students.remove(restStudent)
+    }
+
+    fun getDeletedItems(adapter: StudentListAdapter){
+        while (!restore.isEmpty()) {
+            st.push(restore.peek())
+            restore.remove()
+        }
+        if(!st.isEmpty()) {
+            adapter.addStudent(st.peek())
+            students.add(st.peek())
+            recyclerView.smoothScrollToPosition(students.size - 1)
+            st.pop()
+        }
+        else {
+            Toast.makeText(context, "Trash is empty", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+
     override fun onPause() {
         super.onPause()
         mBundleRecyclerViewState = Bundle()
