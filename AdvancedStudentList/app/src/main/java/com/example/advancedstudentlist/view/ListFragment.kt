@@ -101,9 +101,9 @@ class ListFragment : Fragment() {
                 restore.remove()
             }
             if(!st.isEmpty()) {
-                recyclerView.smoothScrollToPosition(students.size - 1)
                 studentsAdapter.addStudent(st.peek())
                 students.add(st.peek())
+                recyclerView.smoothScrollToPosition(students.size - 1)
                 st.pop()
             }
             else {

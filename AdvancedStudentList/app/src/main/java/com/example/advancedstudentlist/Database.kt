@@ -16,11 +16,11 @@ class Database() {
     }
 
     fun mockedData(){
-        for(i in 1..10){
+        //for(i in 1..10){
           //  val student = Student("Assem ${i}", "Shyngyskyzy")
            // map[student.name] = student
             //students.add(student)
-        }
+        //}
     }
     fun getStudents(): List<Student>? {
         return this.students

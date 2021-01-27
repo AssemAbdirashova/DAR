@@ -60,6 +60,4 @@ class StudentListAdapter(private var list: MutableList<Student>, private val ite
         fun onStudentSelected(student: Student, position: Int)
         fun onStudentDeleted(restStudent: Student, position: Int)
     }
-
-
 }
