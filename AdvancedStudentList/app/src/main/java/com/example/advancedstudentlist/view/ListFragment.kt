@@ -70,6 +70,7 @@ class ListFragment : Fragment() {
                         restore.add(restStudent)
                     }
                 }
+                students.remove(restStudent)
             }
         }
         val studentsAdapter = StudentListAdapter(students.toMutableList(), listener)
@@ -100,8 +101,8 @@ class ListFragment : Fragment() {
                 restore.remove()
             }
             if(!st.isEmpty()) {
-                studentsAdapter.addStudent(st.peek())
                 recyclerView.smoothScrollToPosition(students.size - 1);
+                studentsAdapter.addStudent(st.peek())
                 st.pop()
             }
             else {
