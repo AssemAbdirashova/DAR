@@ -4,44 +4,32 @@ import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.os.Parcelable
-import android.util.Log
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
-import androidx.navigation.NavController
-import androidx.navigation.Navigation
+import androidx.navigation.Navigation.findNavController
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.advancedstudentlist.R
 import com.example.advancedstudentlist.StudentListAdapter
+import com.example.advancedstudentlist.StudentsRepository
+import com.example.advancedstudentlist.databinding.FragmentListBinding
+import com.example.advancedstudentlist.models.BindingFragment
 import com.example.advancedstudentlist.models.Student
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import kotlinx.android.synthetic.main.fragment_list.*
-import java.util.*
+import java.text.FieldPosition
 
-class ListFragment : Fragment() {
+class ListFragment : BindingFragment<FragmentListBinding>(FragmentListBinding::inflate) {
 
-    private val KEY_RECYCLER_STATE = "recycler_state"
-    lateinit var navController: NavController
+    private val repository = StudentsRepository()
+
     private lateinit var listener: StudentListAdapter.OnItemClickListener
-    private var scrollPosition = 0
     private lateinit var recyclerView: RecyclerView
-    private val students = mutableSetOf<Student>()
-    private var restore: Queue<Student> = LinkedList<Student>()
-    private val st = Stack<Student>()
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_list, container, false)
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -50,26 +38,35 @@ class ListFragment : Fragment() {
         val btnRestoreStudent = view.findViewById<FloatingActionButton>(R.id.btn_restore_student)
         recyclerView = view.findViewById(R.id.student_list)
         recyclerView.layoutManager = LinearLayoutManager(context)
-        navController = Navigation.findNavController(view)
 
         listener = object : StudentListAdapter.OnItemClickListener {
             override fun onStudentSelected(student: Student, position: Int) {
-                val action = ListFragmentDirections.listToDetail(student)
-                view.findNavController().navigate(action)
+//                val action = student.id?.let { ListFragmentDirections.listToDetail() }
+//                if (action != null) {
+//                    view.findNavController().navigate(action)
+//                }
+
+                findNavController().navigate(student.id?.let {
+                    ListFragmentDirections.listToDetail(
+                        it
+                    )
+                }!!)
                 hideKeyboard()
-                scrollPosition = position
             }
-            override fun onStudentDeleted(restStudent: Student, position: Int) {
-               saveDeletedItems(restStudent)
+            override fun onStudentDeleted(restStudent: Student, position: Int, adapter: StudentListAdapter) {
+               repository.deleteStudent(restStudent)
+                adapter.notifyItemRemoved(position)
+                adapter.notifyItemRangeChanged(position, adapter.itemCount - position)
             }
         }
-        val studentsAdapter = StudentListAdapter(students.toMutableList(), listener)
-        recyclerView.adapter = studentsAdapter
 
+        val studentsAdapter = StudentListAdapter(listener)
+        recyclerView.adapter = studentsAdapter
+        studentsAdapter.submitList(repository.getStudents())
         btnAddStudent.setOnClickListener {
             val student = Student(name = etName.text.toString())
             var ok = true
-            for (s in students) {
+            for (s in repository.getStudents()) {
                 if (s.name == student.name) {
                     ok = false
                     break
@@ -79,66 +76,23 @@ class ListFragment : Fragment() {
                 Toast.makeText(context, "Student already in the list!", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             } else {
-                students.add(student)
-                studentsAdapter.addStudent(student)
+               // repository.addStudent(student.name)
+                if (repository.addStudent(etName.text.toString())) {
+                    Toast.makeText(context, "Student already in the list!", Toast.LENGTH_SHORT).show()
+                } else {
+                    studentsAdapter.notifyItemInserted(repository.getStudents().size-1)
+                }
                 etName.setText("")
-                recyclerView.smoothScrollToPosition(students.size - 1)
+                //recyclerView.smoothScrollToPosition(students.size - 1)
             }
         }
-
         btnRestoreStudent.setOnClickListener {
-           getDeletedItems(studentsAdapter)
-        }
-    }
-
-    fun saveDeletedItems(restStudent: Student){
-        when {
-            restore.size < 5 || restore.isEmpty() -> {
-                restore.add(restStudent)
-            }
-            else -> {
-                restore.remove()
-                restore.add(restStudent)
+            if (repository.restoreStudent()) {
+                studentsAdapter.notifyItemInserted(repository.getStudents().size)
             }
         }
-        students.remove(restStudent)
     }
 
-    fun getDeletedItems(adapter: StudentListAdapter){
-        while (!restore.isEmpty()) {
-            st.push(restore.peek())
-            restore.remove()
-        }
-        if(!st.isEmpty()) {
-            adapter.addStudent(st.peek())
-            students.add(st.peek())
-            recyclerView.smoothScrollToPosition(students.size - 1)
-            st.pop()
-        }
-        else {
-            Toast.makeText(context, "Trash is empty", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-
-    override fun onPause() {
-        super.onPause()
-        mBundleRecyclerViewState = Bundle()
-        val listState = recyclerView.layoutManager!!.onSaveInstanceState()
-        mBundleRecyclerViewState!!.putParcelable(KEY_RECYCLER_STATE, listState)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        if (mBundleRecyclerViewState != null) {
-            val listState = mBundleRecyclerViewState!!.getParcelable<Parcelable>(KEY_RECYCLER_STATE)
-            recyclerView.layoutManager!!.onRestoreInstanceState(listState)
-        }
-    }
-
-    companion object {
-        private var mBundleRecyclerViewState: Bundle? = null
-    }
 
     private fun Context.hideKeyboard(view: View) {
         val inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -147,6 +101,8 @@ class ListFragment : Fragment() {
     fun Fragment.hideKeyboard() {
         view?.let { activity?.hideKeyboard(it) }
     }
+
+
 
 
 }

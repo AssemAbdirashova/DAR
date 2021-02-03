@@ -5,18 +5,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
-import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.advancedstudentlist.models.Student
-import com.example.advancedstudentlist.view.ListFragmentDirections
-import java.util.*
 
-class StudentListAdapter(private var list: MutableList<Student>, private val itemClickListener: OnItemClickListener? = null): RecyclerView.Adapter<StudentListAdapter.ViewHolder>() {
+class StudentListAdapter(private val itemClickListener: OnItemClickListener? = null): RecyclerView.Adapter<StudentListAdapter.ViewHolder>() {
 
     //private var list = listOf<Student>()
-    fun addStudent(student: Student) {
-        list.add(student)
-        notifyItemInserted(list.size - 1)
+    private var list = listOf<Student>()
+
+    fun submitList(newList: List<Student>?) {
+        list = newList ?: listOf()
         notifyDataSetChanged()
     }
 
@@ -36,13 +34,8 @@ class StudentListAdapter(private var list: MutableList<Student>, private val ite
             itemClickListener?.onStudentSelected(list[position], position)
         }
         holder.btnDelete.setOnClickListener {
-            val restStudent = list[position]
-            val pos = position
-            list.remove(list[position])
-            notifyItemRemoved(position)
-            notifyDataSetChanged()
             itemClickListener?.
-            onStudentDeleted(restStudent, pos)
+            onStudentDeleted(list[position], position, this)
         }
 
     }
@@ -58,6 +51,6 @@ class StudentListAdapter(private var list: MutableList<Student>, private val ite
 
     interface OnItemClickListener {
         fun onStudentSelected(student: Student, position: Int)
-        fun onStudentDeleted(restStudent: Student, position: Int)
+        fun onStudentDeleted(restStudent: Student,position: Int, adapter: StudentListAdapter)
     }
 }
