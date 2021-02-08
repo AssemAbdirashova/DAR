@@ -42,7 +42,7 @@ class ListFragment : BindingFragment<FragmentListBinding>(FragmentListBinding::i
         listener = object : StudentListAdapter.OnItemClickListener {
             override fun onStudentSelected(student: Student, position: Int) {
 //                val action = student.id?.let { ListFragmentDirections.listToDetail() }
-//                if (action != null) {
+//                if (action != null) {-
 //                    view.findNavController().navigate(action)
 //                }
 
