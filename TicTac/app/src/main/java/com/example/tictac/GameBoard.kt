@@ -14,23 +14,14 @@ class GameBoard {
 
     fun gameOver(): Int{
         for(i in 0 until boardSize){
-            if(rowCrossed(i, 'x')){
+            if(rowCrossed(i, 'x') || rowCrossed(i, 'o')){
                 return 1
             }
-            if(rowCrossed(i, 'o')){
+            if(columnCrossed(i, 'x') || columnCrossed(i, 'o')) {
                 return 2
             }
-            if(columnCrossed(i, 'x')){
-                return 1
-            }
-            if(columnCrossed(i, 'o')){
-                return 2
-            }
-            if(diagonalCrossed('x')){
-                return 1
-            }
-            if(diagonalCrossed('o')){
-                return 2
+            if(diagonalCrossed('x') || diagonalCrossed('o')) {
+                return 3
             }
         }
         var boardFull = true

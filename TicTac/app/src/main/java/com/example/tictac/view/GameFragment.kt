@@ -56,6 +56,7 @@ class GameFragment: BindingFragment<GameFragmentBinding>(GameFragmentBinding::in
                 } else {
                     win(turn)
                     stopGame()
+                    drawLine(i, j , gameBoard.gameOver())
                 }
             }
             else{
@@ -90,6 +91,44 @@ class GameFragment: BindingFragment<GameFragmentBinding>(GameFragmentBinding::in
             glGameBoard.addView(btnContinue)
             btnContinue.setOnClickListener {
                 findNavController().navigate(GameFragmentDirections.actionGameFragmentToRecordsFragment())
+            }
+        }
+    }
+    private fun drawLine(l: Int, r: Int, which: Int){
+        binding.run {
+            if(which == 1 ) {
+                val row: TableRow = glGameBoard.getChildAt(l) as TableRow
+                for (j in 0 until row.childCount) {
+                    val view = row.getChildAt(j)
+                  //  view.setBackgroundResource(R.drawable.ic_horizontal)
+                  view.setBackgroundResource(R.drawable.ic_launcher_background)
+                }
+            }
+            else if(which == 2){
+                for (i in 0 until 3) {
+                    val row = glGameBoard.getChildAt(i) as TableRow
+                    val view = row.getChildAt(r)
+                  //  view?.setBackgroundResource(R.drawable.ic_vertical)
+                    view?.setBackgroundResource(R.drawable.ic_launcher_background)
+                }
+            }
+            else{
+                if((l == 0 && r == 0) || (l == 2 && r== 2)) {
+                    for (i in 0 until 3) {
+                        val row = glGameBoard.getChildAt(i) as TableRow
+                        val view = row.getChildAt(i)
+                    //    view?.setBackgroundResource(R.drawable.ic_diagonal)
+                        view?.setBackgroundResource(R.drawable.ic_launcher_background)
+                    }
+                }
+                else{
+                    for (i in 0 until 3) {
+                        val row = glGameBoard.getChildAt(i) as TableRow
+                        val view = row.getChildAt(2-i)
+                        //    view?.setBackgroundResource(R.drawable.ic_diagonal2)
+                        view?.setBackgroundResource(R.drawable.ic_launcher_background)
+                    }
+                }
             }
         }
     }
