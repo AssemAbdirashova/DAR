@@ -3,7 +3,7 @@ package com.example.tictac
 import android.util.Log
 
 object UserRepository {
-    private val users = mutableListOf(User(0, "home", 10,5),User(0, "home", 10,5),User(0, "home", 10,5),User(0, "home", 10,5))
+    private val users = mutableListOf<User>()
     fun getUsers() = users
     private val username = mutableSetOf<String>()
 
