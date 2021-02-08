@@ -8,6 +8,9 @@ class GameBoard {
     fun isMatched(r: Int, c: Int):Boolean {
         return myBoard[r][c] == ' '
     }
+    fun setMove(i: Int, j: Int, turn: Char){
+        myBoard[i][j] = turn
+    }
 
     fun gameOver(): Int{
         for(i in 0 until boardSize){

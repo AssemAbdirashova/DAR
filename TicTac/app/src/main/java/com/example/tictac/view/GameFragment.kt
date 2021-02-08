@@ -40,7 +40,7 @@ class GameFragment: BindingFragment<GameFragmentBinding>(GameFragmentBinding::in
     private fun Move(i: Int, j: Int, view: View): View.OnClickListener{
         return View.OnClickListener {
             if(gameBoard.isMatched(i, j )) {
-                gameBoard.getBoard()[i][j] = turn
+               gameBoard.setMove(i, j , turn)
                 if (turn == 'x') {
                     view.setBackgroundResource(R.drawable.ic_x)
                     turn = 'o'
